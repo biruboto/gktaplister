@@ -1,38 +1,53 @@
 {
   "theme": "red side",
-  "refreshToken": "e2vvi3td62h",
+  "refreshToken": "s02afcrly8",
   "beers": [
     {
-      "id": "3m7skfvg",
-      "brewery": "deschutes",
-      "title": "black butte",
-      "city": "bend",
-      "state": "or",
-      "style": "american porter",
-      "abv": "5.5",
-      "logoPath": "./logos/deschutes.svg",
-      "soldOut": false
+      "id": "z6b3pdru",
+      "soldOut": true
     },
     {
-      "id": "2pzt8l0k",
-      "brewery": "ablis",
-      "title": "cran blood orange cbd",
-      "city": "bend",
-      "state": "or",
-      "style": "sparkling cbd soda",
-      "abv": "0.0",
-      "logoPath": "./logos/ablis.svg",
+      "id": "3m7skfvg",
       "soldOut": false
     },
     {
       "id": "3m7skfvg",
-      "brewery": "deschutes",
-      "title": "black butte",
-      "city": "bend",
-      "state": "or",
-      "style": "american porter",
-      "abv": "5.5",
-      "logoPath": "./logos/deschutes.svg",
+      "soldOut": false
+    },
+    {
+      "id": "jwz6nxb4",
+      "soldOut": false
+    },
+    {
+      "id": "3m7skfvg",
+      "soldOut": false
+    },
+    {
+      "id": "3m7skfvg",
+      "soldOut": false
+    },
+    {
+      "id": "3m7skfvg",
+      "soldOut": false
+    },
+    {
+      "id": "bxy38qld",
+      "soldOut": false
+    },
+    {
+      "id": "bxy38qld",
+      "soldOut": false
+    },
+    {
+      "id": "hcr7d4ye",
+      "soldOut": false
+    },
+    {
+      "id": "mf8vz2g1",
+      "soldOut": false
+    },
+    {
+      "id": "bxy38qld",
       "soldOut": false
     }
   ]

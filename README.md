@@ -1,41 +1,20 @@
 # gktaplister
 
-                    ___                      _   _  __        _           _
-                   / __|_ _ ___ _  _ _ _  __| | | |/ /___ _ _| |_ _ _ ___| |
-                  | (_ | '_/ _ \ || | ' \/ _` | | ' </ _ \ ' \  _| '_/ _ \ |          ▄
-      .~~~~.       \___|_| \___/\_,_|_||_\__,_| |_|\_\___/_||_\__|_| \___/_|          █
-      i====i_    ___        _   ___ _    _       _____            _    _    _         █
-      |cccc|_)  | _ \___ __| | / __(_)__| |___  |_   _|_ _ _ __  | |  (_)__| |_      ███
-      |cccc|    |   / -_) _` | \__ \ / _` / -_)   | |/ _` | '_ \ | |__| (_-<  _|  █▄█████▄█
-      `-==-'    |_|_\___\__,_| |___/_\__,_\___|   |_|\__,_| .__/ |____|_/__/\__|  █▀  █  ▀█
-                                                          |_|
+         ___                      _   _  __        _           _
+        / __|_ _ ___ _  _ _ _  __| | | |/ /___ _ _| |_ _ _ ___| |
+       | (_ | '_/ _ \ || | ' \/ _` | | ' </ _ \ ' \  _| '_/ _ \ |
+        \___|_| \___/\_,_|_||_\__,_| |_|\_\___/_||_\__|_| \___/_|
+
+████████╗ █████╗ ██████╗ ██╗     ██╗███████╗████████╗███████╗██████╗       ▄                                        
+╚══██╔══╝██╔══██╗██╔══██╗██║     ██║██╔════╝╚══██╔══╝██╔════╝██╔══██╗      █                                        
+   ██║   ███████║██████╔╝██║     ██║███████╗   ██║   █████╗  ██████╔╝      █                                   
+   ██║   ██╔══██║██╔═══╝ ██║     ██║╚════██║   ██║   ██╔══╝  ██╔══██╗     ███                                  
+   ██║   ██║  ██║██║     ███████╗██║███████║   ██║   ███████╗██║  ██║  █▄█████▄█                                   
+   ╚═╝   ╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝  █▀  █  ▀█     
  ▪Created by Bill Eckerson, with help from ChatGPT, 2025.
- ▪I am not a web designer. This code is probably garbage, but it works.😁                    
- ▪View this file in text editor with a monospace font such as Consolas, Courier New, or Lucida Console.
+ ▪I am not a web developer or programmer. This code is probably garbage, but it works.😁
 
-░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ RELEASE NOTES ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░
-
-Ground Kontrol Taplister
-
-## v.1 07.24.25
-Core functionality working. Utility pulls beers from JSON, shows them in table. Can edit, add, remove beers.
-
-## v.12 07.25.25
-Added "card" system for individual beers. Selecting a single beer from the dropdown displays a "card" with fields for beer info plus a logo preview for editing single beers.
-
-## v.13 07.25.25
- "Add beer" function creates blank card that user can fill out. Additional format tweaks to card system.
-
-## v.25 07.26.25
-Format tweaks. Added database backup function that creates copy of taplist with date and timestamp appended to file name. Added working status messages at top of screen ("Saved!" "Error saving..." "Database backed up, etc").
-
-## v.3 07.27.25
-Added "tapper" save animation. Switched from frame to time-based timing. Animation scaled 2X. Additional layout tweaks.
-
-## v.35 07.28.25
-Formatted "show all" table. Realized I may need to add a "beer ID" field to JSON to avoid sorting and indexing confusion. Might require rewrites of sections of all three parts.
-
-
+░░░░░░░░▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓ RELEASE NOTES ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒░░░░░░░░
 
 v1.0 (07.14.2025):
 ► Full working tap list and editor.
@@ -73,6 +52,26 @@ restore the theme control. Themes can be added/modified with the structure in st
 in, just in case.
 ► Fixed a bug in the spaceship spawning that prevented it from spawning from the left or top sides of
 the screen.
+
+[DB Editor]
+## v.1 07.24.25
+Core functionality working. Utility pulls beers from JSON, shows them in table. Can edit, add, remove beers.
+
+## v.12 07.25.25
+Added "card" system for individual beers. Selecting a single beer from the dropdown displays a "card" with fields for beer info plus a logo preview for editing single beers.
+
+## v.13 07.25.25
+ "Add beer" function creates blank card that user can fill out. Additional format tweaks to card system.
+
+## v.25 07.26.25
+Format tweaks. Added database backup function that creates copy of taplist with date and timestamp appended to file name. Added working status messages at top of screen ("Saved!" "Error saving..." "Database backed up, etc").
+
+## v.3 07.27.25
+Added "tapper" save animation. Switched from frame to time-based timing. Animation scaled 2X. Additional layout tweaks.
+
+## v.35 07.28.25
+Formatted "show all" table. Realized I may need to add a "beer ID" field to JSON to avoid sorting and indexing confusion. Might require rewrites of sections of all three parts. Began calling project "Taplister" and treating all three components as a single entity.
+
 
 To-do:
 ► Once onsite, blue side's formatting needs to be changed to accomodate a wooden bezel that partially

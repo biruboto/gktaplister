@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Beer Database Editor (Card Style)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/dbeditor.css">
+  <link rel="stylesheet" href="css/dbeditor.css">
 </head>
 <body>
   <div class="editor-header">
@@ -16,7 +16,6 @@
   <select id="beerDropdown"> ... </select>
    <button type="button" id="backupDbBtn" class="backup-btn">💾 backup database</button>
 </div>
-
 
 <div id="beerCard" class="beer-card">
   <form id="beerForm" class="beer-fields" autocomplete="off">
@@ -80,7 +79,7 @@
 
 
 <script>
-const apiURL = "beer-db-api.php";
+const apiURL = "php/beer-db-api.php";
 const logoListURL = apiURL + "?logos";
 const fields = ["brewery","title","city","state","style","abv","logoPath"];
 let beers = [];
@@ -96,13 +95,24 @@ const tbody = document.querySelector("#beerTable tbody");
 const beerTable = document.getElementById('beerTable');
 const backToListBtn = document.getElementById('backToList');
 
+function generateBeerId() {
+  // 8 chars: a-z, 0-9
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  for (let i = 0; i < 8; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
+  return id;
+}
+
 // 1. Load logos, then beers
 Promise.all([
   fetch(logoListURL).then(r=>r.json()),
   fetch(apiURL).then(r=>r.json())
 ]).then(([logos, beerData]) => {
   logoFiles = logos;
-  beers = beerData;
+  beers = beerData.map(b => {
+  if (!b.id) b.id = generateBeerId();
+  return b;
+});
   populateDropdown();
   populateLogoDropdown();
   buildBeerTable();
@@ -164,7 +174,7 @@ td.innerHTML = `<input class="${inputClass}" value="${beer[f] ? beer[f] : ""}" p
     });
     // Delete button
     const td = document.createElement('td');
-    td.innerHTML = `<button type="button" class="delete-row" data-idx="${idx}">X</button>`;
+    td.innerHTML = `<button type="button" class="delete-row" data-id="${beer.id}">X</button>`;
     tr.appendChild(td);
     tbody.appendChild(tr);
   });
@@ -266,8 +276,9 @@ beerForm.onsubmit = async function(e) {
 
   if (currentBeerIndex === null) {
     // ADD NEW BEER MODE: append to end of beers array
-    beers.push(beer);
-    currentBeerIndex = beers.length - 1; // now points to the new one!
+    beer.id = generateBeerId();
+beers.push(beer);
+currentBeerIndex = beers.length - 1;
   } else {
     // EDIT MODE: update existing beer
     beers[currentBeerIndex] = beer;
@@ -314,9 +325,9 @@ document.getElementById('deleteBeer').onclick = async function() {
 // Delete from table (show-all mode)
 tbody.onclick = async function(e) {
   if (!e.target.classList.contains('delete-row')) return;
-  let idx = Number(e.target.getAttribute('data-idx'));
+  let beerId = e.target.getAttribute('data-id');
   if (!confirm("Delete this beer?")) return;
-  beers.splice(idx, 1);
+  beers = beers.filter(b => b.id !== beerId);
   const res = await fetch(apiURL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -361,7 +372,11 @@ document.getElementById('saveAllBtn').onclick = async function() {
     });
     if (Object.values(beer).some(val => val)) newBeers.push(beer);
   });
-  beers = newBeers;
+  // <<-- Here! Assign IDs to any missing
+  beers = newBeers.map(b => {
+    if (!b.id) b.id = generateBeerId();
+    return b;
+  });
   // POST to API
   const res = await fetch(apiURL, {
     method: "POST",

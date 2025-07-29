@@ -1,6 +1,6 @@
  @font-face {
   font-family: 'MagistralBold';
-  src: url('./fonts/MagistralBold.otf') format('opentype');
+  src: url('../fonts/MagistralBold.otf') format('opentype');
   font-weight: bold;
   font-style: normal;
 }
