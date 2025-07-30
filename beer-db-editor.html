@@ -194,6 +194,8 @@ function showBlankBeerCard() {
       document.getElementById(f).value = "";
     }
   });
+// Hide the delete button
+  document.getElementById('deleteBeer').style.display = "none";
   beerCard.style.display = "block";
 }
 
@@ -250,6 +252,8 @@ function fillBeerCard(idx) {
       document.getElementById(f).value = beer[f] || "";
     }
   });
+  // Show the delete button
+  document.getElementById('deleteBeer').style.display = "";
   beerCard.style.display = "block";
 }
 

@@ -22,13 +22,13 @@ These tools provide bartenders/managers with the ability to switch which beers a
 **`beer-db-editor.html`**:  
 This tool allows managers to add/remove/modify beers to/from/within the "database."  
 
-<h1 style="color: #fabd2f;">Taplists</h2>  
+<h1 style="color: #fabd2f;">Taplists</h1>  
 
 ![Static Badge](https://img.shields.io/badge/To_be_filled_in-red?style=plastic)
-<h1 style="color: #fabd2f;">Taplist Editors</h2>  
+<h1 style="color: #fabd2f;">Taplist Editors</h1>  
 
 ![Static Badge](https://img.shields.io/badge/To_be_filled_in-red?style=plastic)
-<h1 style="color: #fabd2f;">Database Editor</h2>
+<h1 style="color: #fabd2f;">Database Editor</h1>
 
 When the Beer DB Editor is launched, initially two options are presented. The ![Static Badge](https://img.shields.io/badge/💾_backup_database-blue?style=flat) button simply creates a copy of the existing `beer-database.json` in the /json folder with the time and date appended to the filename (e.g. `beer-database-backup-20250729-220947.json`). The **(choose a beer...)** dropdown contains all editing tools.  
 
@@ -129,4 +129,5 @@ alien sprite flies by and the GK ship follows, shooting at it.
   - Noticed bug where clicking "delete" from the add new beer card simply removes the first listing from the database. Remove delete button from "add new beer" card?
   - Limit ABV field to numbers?
   - Limit state field to two characters
+  - Add motion to tap list logo?
 </details>
