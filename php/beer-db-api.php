@@ -23,7 +23,7 @@ if (isset($_GET['logos'])) {
     $logoDir = __DIR__ . '/../logos';
     $files = [];
     foreach (glob($logoDir . '/*.svg') as $file) {
-        $files[] = './logos/' . basename($file);
+        $files[] = basename($file);
     }
     header('Content-Type: application/json');
     echo json_encode($files);

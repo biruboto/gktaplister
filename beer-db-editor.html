@@ -146,29 +146,33 @@ function populateDropdown() {
 
 // Populate the logo select dropdown
 function populateLogoDropdown(selected = "") {
+  // Clean selected value: only filename
+  selected = selected.replace(/^.*[\\/]/, ""); 
   const logoSel = document.getElementById('logoPath');
   logoSel.innerHTML = `<option value="">-- Select Logo --</option>`;
   logoFiles.forEach(path => {
-    logoSel.innerHTML += `<option value="${path}" ${selected===path?"selected":""}>${path.replace("./logos/","")}</option>`;
+    const filename = path.replace(/^.*[\\/]/, "");
+    logoSel.innerHTML += `<option value="${filename}" ${selected===filename?"selected":""}>${filename}</option>`;
   });
 }
+
 
 // Build the table for show-all-beers view
 function buildBeerTable() {
   tbody.innerHTML = "";
   beers.forEach((beer, idx) => {
     const tr = document.createElement('tr');
+    tr.dataset.id = beer.id || ""; // <-- preserves id even if not visible in the table!
     fields.forEach(f => {
       const td = document.createElement('td');
       if (f === "logoPath") {
         td.innerHTML = makeLogoDropdownTable(beer[f]);
       } else {
         let inputClass = "beer-input";
-if (f === "state" || f === "abv") inputClass += " beer-short";
-if (f === "state") inputClass += " beer-state";
-if (f === "abv") inputClass += " beer-abv";
-
-td.innerHTML = `<input class="${inputClass}" value="${beer[f] ? beer[f] : ""}" placeholder="${f}">`;
+        if (f === "state" || f === "abv") inputClass += " beer-short";
+        if (f === "state") inputClass += " beer-state";
+        if (f === "abv") inputClass += " beer-abv";
+        td.innerHTML = `<input class="${inputClass}" value="${beer[f] ? beer[f] : ""}" placeholder="${f}">`;
       }
       tr.appendChild(td);
     });
@@ -199,8 +203,10 @@ function makeLogoDropdownTable(selected) {
   let html = `<select class="beer-input">`;
   html += `<option value="">-- Select Logo --</option>`;
   logoFiles.forEach(path => {
-    html += `<option value="${path}" ${selected===path?"selected":""}>${path.replace("./logos/","")}</option>`;
-  });
+  const filename = path.replace(/^.*[\\/]/, "");
+  html += `<option value="${filename}" ${selected===filename?"selected":""}>${filename}</option>`;
+});
+
   html += `</select>`;
   return html;
 }
@@ -237,7 +243,7 @@ function fillBeerCard(idx) {
       populateLogoDropdown(beer[f]);
       // Show logo preview if present
       if (beer[f]) {
-        logoPreview.src = beer[f];
+        logoPreview.src = `/logos/${beer[f]}`;
         logoPreview.style.display = "";
       } else {
         logoPreview.style.display = "none";
@@ -252,13 +258,10 @@ function fillBeerCard(idx) {
 // Handle logo dropdown change (update preview)
 document.getElementById('logoPath').onchange = function() {
   const path = this.value;
-  if (path) {
-    logoPreview.src = path;
-    logoPreview.style.display = "";
-  } else {
-    logoPreview.style.display = "none";
-  }
+  logoPreview.src = path ? `/logos/${path.replace(/^.*[\\/]/, "")}` : "";
+  logoPreview.style.display = path ? "" : "none";
 };
+
 
 // Handle "back to list" (reset to no selection)
 backToListBtn.onclick = () => {
@@ -367,6 +370,8 @@ document.getElementById('saveAllBtn').onclick = async function() {
   let newBeers = [];
   tbody.querySelectorAll('tr').forEach(tr => {
     let beer = {};
+    // ⬇️ Always keep the ID from the row if present
+    beer.id = tr.dataset.id || generateBeerId();
     fields.forEach((f, i) => {
       if (f === "logoPath") {
         beer[f] = tr.children[i].querySelector('select').value.trim();
@@ -374,13 +379,11 @@ document.getElementById('saveAllBtn').onclick = async function() {
         beer[f] = tr.children[i].querySelector('input').value.trim();
       }
     });
+    // Only add non-empty beers
     if (Object.values(beer).some(val => val)) newBeers.push(beer);
   });
-  // Assign IDs to any missing
-  beers = newBeers.map(b => {
-    if (!b.id) b.id = generateBeerId();
-    return b;
-  });
+  beers = newBeers;
+
   // POST to API
   const res = await fetch(apiURL, {
     method: "POST",
@@ -389,14 +392,13 @@ document.getElementById('saveAllBtn').onclick = async function() {
   });
   if (res.ok) {
     statusDiv.textContent = "Saved!";
-    startBeerSlide();
+    startBeerSlide && startBeerSlide(); // animation
     setTimeout(() => statusDiv.textContent = "", 3000);
     populateDropdown();
     buildBeerTable();
-    beerDropdown.value = "-1"; // <-- stay in "show all"
-    // DO NOT call fillBeerCard(currentBeerIndex)!
+    beerDropdown.value = "-1"; // stay on table view
+    // DO NOT call fillBeerCard(currentBeerIndex) here!
     // DO NOT call beerDropdown.onchange()!
-    // Table view will persist
   } else {
     statusDiv.textContent = "Error saving!";
   }
