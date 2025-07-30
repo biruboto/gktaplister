@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Beer Database Editor (Card Style)</title>
+  <title>GK Beer DB Editor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/css/dbeditor.css">
+  <link rel="stylesheet" href="css/dbeditor.css">
 </head>
 <body>
   <div class="editor-header">
@@ -16,7 +16,6 @@
   <select id="beerDropdown"> ... </select>
    <button type="button" id="backupDbBtn" class="backup-btn">💾 backup database</button>
 </div>
-
 
 <div id="beerCard" class="beer-card">
   <form id="beerForm" class="beer-fields" autocomplete="off">
@@ -80,7 +79,7 @@
 
 
 <script>
-const apiURL = "beer-db-api.php";
+const apiURL = "php/beer-db-api.php";
 const logoListURL = apiURL + "?logos";
 const fields = ["brewery","title","city","state","style","abv","logoPath"];
 let beers = [];
@@ -96,13 +95,24 @@ const tbody = document.querySelector("#beerTable tbody");
 const beerTable = document.getElementById('beerTable');
 const backToListBtn = document.getElementById('backToList');
 
+function generateBeerId() {
+  // 8 chars: a-z, 0-9
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let id = '';
+  for (let i = 0; i < 8; i++) id += chars.charAt(Math.floor(Math.random() * chars.length));
+  return id;
+}
+
 // 1. Load logos, then beers
 Promise.all([
   fetch(logoListURL).then(r=>r.json()),
   fetch(apiURL).then(r=>r.json())
 ]).then(([logos, beerData]) => {
   logoFiles = logos;
-  beers = beerData;
+  beers = beerData.map(b => {
+  if (!b.id) b.id = generateBeerId();
+  return b;
+});
   populateDropdown();
   populateLogoDropdown();
   buildBeerTable();
@@ -136,35 +146,39 @@ function populateDropdown() {
 
 // Populate the logo select dropdown
 function populateLogoDropdown(selected = "") {
+  // Clean selected value: only filename
+  selected = selected.replace(/^.*[\\/]/, ""); 
   const logoSel = document.getElementById('logoPath');
   logoSel.innerHTML = `<option value="">-- Select Logo --</option>`;
   logoFiles.forEach(path => {
-    logoSel.innerHTML += `<option value="${path}" ${selected===path?"selected":""}>${path.replace("./logos/","")}</option>`;
+    const filename = path.replace(/^.*[\\/]/, "");
+    logoSel.innerHTML += `<option value="${filename}" ${selected===filename?"selected":""}>${filename}</option>`;
   });
 }
+
 
 // Build the table for show-all-beers view
 function buildBeerTable() {
   tbody.innerHTML = "";
   beers.forEach((beer, idx) => {
     const tr = document.createElement('tr');
+    tr.dataset.id = beer.id || ""; // <-- preserves id even if not visible in the table!
     fields.forEach(f => {
       const td = document.createElement('td');
       if (f === "logoPath") {
         td.innerHTML = makeLogoDropdownTable(beer[f]);
       } else {
         let inputClass = "beer-input";
-if (f === "state" || f === "abv") inputClass += " beer-short";
-if (f === "state") inputClass += " beer-state";
-if (f === "abv") inputClass += " beer-abv";
-
-td.innerHTML = `<input class="${inputClass}" value="${beer[f] ? beer[f] : ""}" placeholder="${f}">`;
+        if (f === "state" || f === "abv") inputClass += " beer-short";
+        if (f === "state") inputClass += " beer-state";
+        if (f === "abv") inputClass += " beer-abv";
+        td.innerHTML = `<input class="${inputClass}" value="${beer[f] ? beer[f] : ""}" placeholder="${f}">`;
       }
       tr.appendChild(td);
     });
     // Delete button
     const td = document.createElement('td');
-    td.innerHTML = `<button type="button" class="delete-row" data-idx="${idx}">X</button>`;
+    td.innerHTML = `<button type="button" class="delete-row" data-id="${beer.id}">X</button>`;
     tr.appendChild(td);
     tbody.appendChild(tr);
   });
@@ -189,8 +203,9 @@ function makeLogoDropdownTable(selected) {
   let html = `<select class="beer-input">`;
   html += `<option value="">-- Select Logo --</option>`;
   logoFiles.forEach(path => {
-    html += `<option value="${path}" ${selected===path?"selected":""}>${path.replace("./logos/","")}</option>`;
-  });
+  const filename = path.replace(/^.*[\\/]/, "");
+  html += `<option value="${filename}" ${selected===filename?"selected":""}>${filename}</option>`;
+});
   html += `</select>`;
   return html;
 }
@@ -227,7 +242,7 @@ function fillBeerCard(idx) {
       populateLogoDropdown(beer[f]);
       // Show logo preview if present
       if (beer[f]) {
-        logoPreview.src = beer[f];
+        logoPreview.src = `/logos/${beer[f]}`;
         logoPreview.style.display = "";
       } else {
         logoPreview.style.display = "none";
@@ -242,13 +257,10 @@ function fillBeerCard(idx) {
 // Handle logo dropdown change (update preview)
 document.getElementById('logoPath').onchange = function() {
   const path = this.value;
-  if (path) {
-    logoPreview.src = path;
-    logoPreview.style.display = "";
-  } else {
-    logoPreview.style.display = "none";
-  }
+  logoPreview.src = path ? `/logos/${path.replace(/^.*[\\/]/, "")}` : "";
+  logoPreview.style.display = path ? "" : "none";
 };
+
 
 // Handle "back to list" (reset to no selection)
 backToListBtn.onclick = () => {
@@ -266,10 +278,12 @@ beerForm.onsubmit = async function(e) {
 
   if (currentBeerIndex === null) {
     // ADD NEW BEER MODE: append to end of beers array
+    beer.id = generateBeerId();
     beers.push(beer);
-    currentBeerIndex = beers.length - 1; // now points to the new one!
+    currentBeerIndex = beers.length - 1;
   } else {
-    // EDIT MODE: update existing beer
+    // EDIT MODE: preserve existing id!
+    beer.id = beers[currentBeerIndex].id; // <---- This line is key!
     beers[currentBeerIndex] = beer;
   }
 
@@ -280,14 +294,18 @@ beerForm.onsubmit = async function(e) {
     body: JSON.stringify(beers)
   });
 
-if (res.ok) {
-  statusDiv.textContent = "Saved!";
-  startBeerSlide();   // <--- THIS TRIGGERS THE ANIMATION!
-  setTimeout(() => statusDiv.textContent = "", 3000);
-  populateDropdown();
-  fillBeerCard(currentBeerIndex); // always fills the last added or edited
-  buildBeerTable();
-}
+  if (res.ok) {
+    statusDiv.textContent = "Saved!";
+    startBeerSlide();   // <--- THIS TRIGGERS THE ANIMATION!
+    setTimeout(() => statusDiv.textContent = "", 3000);
+    populateDropdown();
+    buildBeerTable();
+
+    // Only switch to "show all" if that's what the user was doing!
+    // Otherwise, stay on current beer card
+    beerDropdown.value = currentBeerIndex;
+    beerDropdown.onchange();
+  }
 };
 
 // Delete single beer handler
@@ -303,7 +321,7 @@ document.getElementById('deleteBeer').onclick = async function() {
     statusDiv.textContent = "Deleted!";
     setTimeout(() => statusDiv.textContent = "", 2000);
     populateDropdown();
-    beerDropdown.value = "-1";
+    beerDropdown.value = "";
     beerDropdown.onchange();
     buildBeerTable();
   } else {
@@ -314,9 +332,9 @@ document.getElementById('deleteBeer').onclick = async function() {
 // Delete from table (show-all mode)
 tbody.onclick = async function(e) {
   if (!e.target.classList.contains('delete-row')) return;
-  let idx = Number(e.target.getAttribute('data-idx'));
+  let beerId = e.target.getAttribute('data-id');
   if (!confirm("Delete this beer?")) return;
-  beers.splice(idx, 1);
+  beers = beers.filter(b => b.id !== beerId);
   const res = await fetch(apiURL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -336,7 +354,7 @@ tbody.onclick = async function(e) {
 
 document.getElementById('backupDbBtn').onclick = async function() {
   statusDiv.textContent = 'Backing up...';
-  const res = await fetch('beer-db-api.php?backup', { method: 'POST' });
+  const res = await fetch('php/beer-db-api.php?backup', { method: 'POST' });
   if (res.ok) {
     const txt = await res.text();
     statusDiv.textContent = 'Backup created: ' + txt;
@@ -352,6 +370,8 @@ document.getElementById('saveAllBtn').onclick = async function() {
   let newBeers = [];
   tbody.querySelectorAll('tr').forEach(tr => {
     let beer = {};
+    // ⬇️ Always keep the ID from the row if present
+    beer.id = tr.dataset.id || generateBeerId();
     fields.forEach((f, i) => {
       if (f === "logoPath") {
         beer[f] = tr.children[i].querySelector('select').value.trim();
@@ -359,9 +379,11 @@ document.getElementById('saveAllBtn').onclick = async function() {
         beer[f] = tr.children[i].querySelector('input').value.trim();
       }
     });
+    // Only add non-empty beers
     if (Object.values(beer).some(val => val)) newBeers.push(beer);
   });
   beers = newBeers;
+
   // POST to API
   const res = await fetch(apiURL, {
     method: "POST",
@@ -370,11 +392,13 @@ document.getElementById('saveAllBtn').onclick = async function() {
   });
   if (res.ok) {
     statusDiv.textContent = "Saved!";
-    startBeerSlide();
+    startBeerSlide && startBeerSlide(); // animation
     setTimeout(() => statusDiv.textContent = "", 3000);
     populateDropdown();
-    fillBeerCard(currentBeerIndex);
     buildBeerTable();
+    beerDropdown.value = "-1"; // stay on table view
+    // DO NOT call fillBeerCard(currentBeerIndex) here!
+    // DO NOT call beerDropdown.onchange()!
   } else {
     statusDiv.textContent = "Error saving!";
   }
@@ -384,8 +408,7 @@ const canvas = document.getElementById('tapperAnim');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-
-// Asset filenames (swap for yours!)
+// Asset filenames
 const barImg = new Image();
 barImg.src = './sprites/bar.png'; // 290x96
 const bartenderImg = new Image();

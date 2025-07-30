@@ -841,7 +841,28 @@ Promise.all([
 .then(([data, masterList]) => {
   // 1. Apply theme
   document.body.setAttribute('data-theme', data.theme || 'default');
-  getComputedStyle(document.body).getPropertyValue('--logo-face'); // Force reflow
+  void document.body.offsetWidth; // Force reflow for new CSS vars
+
+  // 1.5. (NEW) Theme the taplist logo!
+  const logo = document.getElementById('taplist-logo');
+  if (logo) {
+    // If already loaded (sometimes the object is cached and ready)
+    if (logo.contentDocument && logo.contentDocument.readyState === 'complete') {
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
+      });
+    }
+    // Always attach event in case it loads asynchronously
+    logo.addEventListener('load', () => {
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
+      });
+    });
+  }
 
   // 2. Refresh token logic
   if (currentRefreshToken === null) {
@@ -869,7 +890,7 @@ Promise.all([
 
     const objectEl = document.createElement('object');
     objectEl.setAttribute('type', 'image/svg+xml');
-    objectEl.setAttribute('data', beer.logoPath);
+    objectEl.setAttribute('data', `/logos/${beer.logoPath}`);
     objectEl.classList.add('logo');
     objectEl.style.width = '100%';
     objectEl.style.height = '100%';

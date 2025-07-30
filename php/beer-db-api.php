@@ -1,16 +1,18 @@
 <?php
 header('Content-Type: application/json');
-$jsonFile = "beer-database.json";
+$jsonFile = "../json/beer-database.json";
 
 // Backup DB
 if (isset($_GET['backup'])) {
-    $src = __DIR__ . '/beer-database.json';
+    // Backup *from* /json/beer-database.json
+    $src = realpath(__DIR__ . '/../json/beer-database.json');
     date_default_timezone_set('America/Los_Angeles'); // Or your preferred tz
     $date = date('Ymd-His');
-    $dest = __DIR__ . "/beer-database-backup-{$date}.json";
-    if (copy($src, $dest)) {
-        // Only output the new filename (client expects this!)
-        echo basename($dest);
+    // Save the backup *to* /json/
+    $dest = realpath(__DIR__ . '/../json') . "/beer-database-backup-{$date}.json";
+    if ($src && copy($src, $dest)) {
+        // Only output the new filename (relative to /json)
+        echo "json/" . basename($dest);
     } else {
         http_response_code(500);
         echo "Backup failed!";
@@ -20,10 +22,10 @@ if (isset($_GET['backup'])) {
 
 // If the request is for the logo list, return it
 if (isset($_GET['logos'])) {
-    $logoDir = __DIR__ . '/logos';
+    $logoDir = __DIR__ . '/../logos';
     $files = [];
     foreach (glob($logoDir . '/*.svg') as $file) {
-        $files[] = './logos/' . basename($file);
+        $files[] = basename($file);
     }
     header('Content-Type: application/json');
     echo json_encode($files);

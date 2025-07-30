@@ -247,7 +247,6 @@
   }
 
 function animateStarfield() {
-  console.log("drawing starfield")
   const bgColor = getComputedStyle(document.body).getPropertyValue('--starfield-bg').trim();
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, width, height);
@@ -880,163 +879,171 @@ function autoResizeText(selector, maxSize = 80, minSize = 12, step = 1) {
   });
 }
 
-// ✅ Our helper function
 function resizeTextAll() {
   autoResizeText('.beer-name-wrapper', 72, 16);
   autoResizeText('.beer-info', 36, 12);
 }
 
-function loadAndRenderBeers() {
-  fetch('json/red-beers.json', { cache: 'no-store' })
-    .then(res => res.json())
-    .then(data => {
-      // 1. Apply theme
-      document.body.setAttribute('data-theme', data.theme || 'default');
+// Main code!
+Promise.all([
+  fetch('json/red-beers.json', { cache: 'no-store' }).then(res => res.json()),
+  fetch('json/beer-database.json').then(res => res.json())
+])
+.then(([data, masterList]) => {
+  // 1. Apply theme
+  document.body.setAttribute('data-theme', data.theme || 'default');
+  void document.body.offsetWidth; // Force reflow for new CSS vars
 
-      // ✅ Force reflow so getComputedStyle uses the *new* theme values
-      getComputedStyle(document.body).getPropertyValue('--logo-face');
-
-      // 2. Check for refresh token changes
-      if (currentRefreshToken === null) {
-        currentRefreshToken = data.refreshToken;
-      } else if (data.refreshToken !== currentRefreshToken) {
-        location.reload(); // Refresh the page if token has changed
-      }
-
-      // 3. Render beer list
-      const beers = data.beers;
-      const logoPlaceholders = document.querySelectorAll('.cell img.logo, .cell object.logo');
-      const texts = document.querySelectorAll('.cell.text .text');
-
-      beers.forEach((beer, i) => {
-        const logoImg = logoPlaceholders[i];
-        const text = texts[i];
-        if (!logoImg || !text) return;
-
-        const objectEl = document.createElement('object');
-        objectEl.setAttribute('type', 'image/svg+xml');
-        objectEl.setAttribute('data', beer.logoPath);
-        objectEl.classList.add('logo');
-        objectEl.style.width = '100%';
-        objectEl.style.height = '100%';
-        if (beer.soldOut === true) objectEl.classList.add('sold-out');
-
-        logoImg.replaceWith(objectEl);
-
-        objectEl.addEventListener('load', () => {
-          let attempts = 0;
-          const maxAttempts = 10;
-
-          function tryStyleLogo() {
-            const svgDoc = objectEl.contentDocument;
-            if (svgDoc) {
-              const logoFace = svgDoc.querySelector('.logo-face');
-              const color = getComputedStyle(document.body).getPropertyValue('--logo-face').trim();
-              if (logoFace) {
-                logoFace.style.fill = color;
-                console.log(`Styled logo for ${beer.brewery} with color: ${color}`);
-              }
-            } else if (attempts < maxAttempts) {
-              attempts++;
-              setTimeout(tryStyleLogo, 100);
-            } else {
-              console.warn(`Logo for ${beer.brewery} failed to load in time`);
-            }
-          }
-
-          tryStyleLogo();
-        });
-
-        const soldOut = beer.soldOut === true;
-        text.innerHTML = `
-          <div class="beer-name-wrapper ${soldOut ? 'sold-out' : ''}">
-            <span class="beer-name-combined">
-              <span class="brewery">${beer.brewery}</span>
-              <span class="beer-title">${beer.title}</span>
-            </span>
-          </div>
-          <div class="beer-info ${soldOut ? 'sold-out' : ''}">
-            ${soldOut ? 'TEMPORARILY SOLD OUT' : `${beer.city}, ${beer.state} • ${beer.style} • ${beer.abv}% ABV`}
-          </div>
-        `;
+  // 1.5. (NEW) Theme the taplist logo!
+  const logo = document.getElementById('taplist-logo');
+  if (logo) {
+    // If already loaded (sometimes the object is cached and ready)
+    if (logo.contentDocument && logo.contentDocument.readyState === 'complete') {
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
       });
-
-      requestAnimationFrame(() => {
-        autoResizeText('.beer-name-wrapper', 72, 16);
-        autoResizeText('.beer-info', 36, 12);
-        styleTaplistLogo({
-          shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
-          face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
-          highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
-        });
+    }
+    // Always attach event in case it loads asynchronously
+    logo.addEventListener('load', () => {
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
       });
     });
-}
+  }
 
-function updateLogoColors() {
-  const color = getComputedStyle(document.documentElement).getPropertyValue('--logo-face').trim();
-  document.querySelectorAll('object.logo').forEach(obj => {
-    const svgDoc = obj.contentDocument;
-    if (!svgDoc) return;
-    const face = svgDoc.querySelector('.logo-face');
-    if (face) face.style.fill = color;
-  });
-}
+  // 2. Refresh token logic
+  if (currentRefreshToken === null) {
+    currentRefreshToken = data.refreshToken;
+  } else if (data.refreshToken !== currentRefreshToken) {
+    location.reload();
+  }
 
-// Run once when the page loads
-loadAndRenderBeers();
+  // 3. Render beer list
+  const beers = data.beers; // [{id, soldOut}, ...]
+  const logoPlaceholders = document.querySelectorAll('.cell img.logo, .cell object.logo');
+  const texts = document.querySelectorAll('.cell.text .text');
 
-// Then check every 10 seconds for changes
-setInterval(checkForRefreshToken, 10000);
+  beers.forEach((tap, i) => {
+    // Look up full beer info by id
+    const beer = masterList.find(b => b.id === tap.id);
+    if (!beer) {
+      console.warn(`Beer not found for tap id: ${tap.id}`);
+      return;
+    }
 
-function checkForRefreshToken() {
-  fetch('json/red-beers.json', { cache: 'no-store' })
-    .then(res => res.json())
-    .then(data => {
-      if (data.refreshToken && data.refreshToken !== currentRefreshToken) {
-        location.reload(); // Only reload if token changed
+    const logoImg = logoPlaceholders[i];
+    const text = texts[i];
+    if (!logoImg || !text) return;
+
+    const objectEl = document.createElement('object');
+    objectEl.setAttribute('type', 'image/svg+xml');
+    objectEl.setAttribute('data', `/logos/${beer.logoPath}`);
+    objectEl.classList.add('logo');
+    objectEl.style.width = '100%';
+    objectEl.style.height = '100%';
+    if (tap.soldOut === true) objectEl.classList.add('sold-out');
+
+    logoImg.replaceWith(objectEl);
+
+    objectEl.addEventListener('load', () => {
+      let attempts = 0;
+      const maxAttempts = 10;
+
+      function tryStyleLogo() {
+        const svgDoc = objectEl.contentDocument;
+        if (svgDoc) {
+          const logoFace = svgDoc.querySelector('.logo-face');
+          const color = getComputedStyle(document.body).getPropertyValue('--logo-face').trim();
+          if (logoFace) {
+            logoFace.style.fill = color;
+          }
+        } else if (attempts < maxAttempts) {
+          attempts++;
+          setTimeout(tryStyleLogo, 100);
+        } else {
+          console.warn(`Logo for ${beer.brewery} failed to load in time`);
+        }
       }
-    })
-    .catch(err => console.error("Failed to check refresh token", err));
-}
 
-// ✅ Also run resizing on window resize
-let resizeTimeout;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(resizeTextAll, 100);
+      tryStyleLogo();
+    });
+
+    const soldOut = tap.soldOut === true;
+    text.innerHTML = `
+      <div class="beer-name-wrapper ${soldOut ? 'sold-out' : ''}">
+        <span class="beer-name-combined">
+          <span class="brewery">${beer.brewery}</span>
+          <span class="beer-title">${beer.title}</span>
+        </span>
+      </div>
+      <div class="beer-info ${soldOut ? 'sold-out' : ''}">
+        ${soldOut ? 'TEMPORARILY SOLD OUT' : `${beer.city}, ${beer.state} • ${beer.style} • ${beer.abv}% ABV`}
+      </div>
+    `;
+  });
+
+  // (Optional) Run your resize logic after render
+  requestAnimationFrame(resizeTextAll);
 });
 </script>
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-
-  const logo = document.getElementById('taplist-logo');
-if (logo) {
-  logo.addEventListener('load', () => {
-    styleTaplistLogo({
-      shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
-      face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
-      highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
-    });
-  });
-}
-});
 function styleTaplistLogo({ shadow, face, highlight }) {
+  console.log('SVG Theming with:', {shadow, face, highlight});
+
   const logo = document.getElementById('taplist-logo');
-  if (!logo || !logo.contentDocument) return;
+  if (!logo) return;
+  let attempts = 0, maxAttempts = 25;
 
-  const svg = logo.contentDocument;
-
-  const shadowEl = svg.querySelector('.logo-shadow');
-  const faceEl = svg.querySelector('.logo-face');
-  const highlightEl = svg.querySelector('.logo-highlight');
-
-  if (shadowEl) shadowEl.style.fill = shadow;
-  if (faceEl) faceEl.style.fill = face;
-  if (highlightEl) highlightEl.style.fill = highlight;
+  function tryTheme() {
+    const svgDoc = logo.contentDocument;
+    if (!svgDoc) {
+      if (attempts++ < maxAttempts) return setTimeout(tryTheme, 50);
+      return;
+    }
+    const shadowEl = svgDoc.querySelector('.logo-shadow');
+    const faceEl = svgDoc.querySelector('.logo-face');
+    const highlightEl = svgDoc.querySelector('.logo-highlight');
+    if (shadowEl && faceEl && highlightEl) {
+      shadowEl.style.fill = shadow;
+      faceEl.style.fill = face;
+      highlightEl.style.fill = highlight;
+      // console.log('Logo themed successfully!');
+    } else if (attempts++ < maxAttempts) {
+      setTimeout(tryTheme, 50);
+    } else {
+      console.warn('Taplist logo could not be themed (SVG not ready)');
+    }
+  }
+  // Initial slight delay helps in some browsers
+  setTimeout(tryTheme, 50);
 }
 
+window.addEventListener('DOMContentLoaded', () => {
+  const logo = document.getElementById('taplist-logo');
+  if (logo) {
+    logo.addEventListener('load', () => {
+      // Always retry multiple times even after load
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
+      });
+    });
+    // Sometimes, the SVG is cached and already loaded, so you need to check!
+    if (logo.contentDocument && logo.contentDocument.readyState === 'complete') {
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
+      });
+    }
+  }
+});
 </script>
 </body>
 </html

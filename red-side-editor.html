@@ -165,7 +165,7 @@ button[type="submit"]:active {
        <option value="vania">vania</option>
     </select>
 </div> -->
-    <button type="submit"><img src="images/floppy.png" alt="Save" style="display: inline-block; margin-right: 0.6em;">Save Changes</button>
+    <button type="submit">💾 Save Changes</button>
   </form>
 
  <script>
@@ -199,7 +199,7 @@ button[type="submit"]:active {
 
     const container = document.getElementById('dropdowns-container');
 
-for (let i = 0; i < 8; i++) {
+for (let i = 0; i < 12; i++) {
   const beer = currentList[i] || {};
   const select = document.createElement('select');
   select.name = `beer-${i}`;
@@ -243,23 +243,22 @@ for (let i = 0; i < 8; i++) {
   document.getElementById('editor-form').addEventListener('submit', e => {
     e.preventDefault();
 
-    const selects = document.querySelectorAll('select');
-    const newBeers = Array.from(selects).map((select, i) => {
-  const index = parseInt(select.value);
-  const beer = masterList[index];
+   const selects = document.querySelectorAll('select');
+const newBeers = Array.from(selects).map((select, i) => {
+  const beerId = select.value; // This is the id string!
+  const beer = masterList.find(b => b.id === beerId);
 
-  // Skip invalid selections
   if (!beer) return null;
 
   const checkbox = document.querySelector(`input[name="soldout-${i}"]`);
   return {
-    ...beer,
+    id: beer.id,
     soldOut: checkbox?.checked || false
   };
-}).filter(Boolean); // remove nulls
+}).filter(Boolean);
 
-    // Save the whole data object
-    currentData.beers = newBeers;
+currentData.beers = newBeers;
+
 /* Uncomment this line to restore theming.
     currentData.theme = document.getElementById('themeSelect').value; */
     currentData.refreshToken = Math.random().toString(36).slice(2);
