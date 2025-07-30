@@ -9,9 +9,7 @@
    ██║   ██╔══██║██╔═══╝ ██║     ██║╚════██║   ██║   ██╔══╝  ██╔══██╗     ███
    ██║   ██║  ██║██║     ███████╗██║███████║   ██║   ███████╗██║  ██║  █▄█████▄█
    ╚═╝   ╚═╝  ╚═╝╚═╝     ╚══════╝╚═╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝  █▀  █  ▀█
- ▪ Created by Bill Eckerson, with help from ChatGPT, 2025.
- ▪ I am not a web developer or programmer. This code is probably garbage, but it
- works.😁
+ ▪ Proudly vibe-coded by Bill Eckerson with ChatGPT, 2025.
 
 ░░░░░░░░░░░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒░░░░░░░░░░░░
 ```
@@ -24,12 +22,47 @@ These tools provide bartenders/managers with the ability to switch which beers a
 **`beer-db-editor.html`**:  
 This tool allows managers to add/remove/modify beers to/from/within the "database."  
 
-## Taplists  
+<h1 style="color: #fabd2f;">Taplists</h2>  
+
 ![Static Badge](https://img.shields.io/badge/To_be_filled_in-red?style=plastic)
-## Taplist Editors  
+<h1 style="color: #fabd2f;">Taplist Editors</h2>  
+
 ![Static Badge](https://img.shields.io/badge/To_be_filled_in-red?style=plastic)
-## Database Editor
-![Static Badge](https://img.shields.io/badge/To_be_filled_in-red?style=plastic)
+<h1 style="color: #fabd2f;">Database Editor</h2>
+
+When the Beer DB Editor is launched, initially two options are presented. The ![Static Badge](https://img.shields.io/badge/💾_backup_database-blue?style=flat) button simply creates a copy of the existing `beer-database.json` in the /json folder with the time and date appended to the filename (e.g. `beer-database-backup-20250729-220947.json`). The **(choose a beer...)** dropdown contains all editing tools.  
+
+## Menu options:
+- ### 🍻 = show all beers =  
+  - This option displays all beers currently in the `beer-database.json` in a single table. This allows for quick changes to data, or removal of listings by clicking the [X] in the delete column. When you've finished editing, click ![Static Badge](https://img.shields.io/badge/save_all-green?style=flat) at the bottom of the screen. A **"Saved!"** message will appear at the top of the screen if successful.  
+
+- ### 🍺 = add new beer =  
+  - This option displays a blank "beer card," in which the new beer's data can be entered. ABV should be in the format `x.x`, where x is a single digit number. No trailing percent sign is required. State should be a two-letter abbreviation. The **= select logo =** dropdown will display a list of every brewery logo in /logos. Once you've chosen all your data, click ![Static Badge](https://img.shields.io/badge/save-544e68?style=flat). Clicking ![Static Badge](https://img.shields.io/badge/cancel-333333?style=flat) returns you to the main screen.
+  
+- ### **selecting a single beer**  
+  - Alternatively, you can select a single beer from the dropdown to edit its details in the "card" view. The ![Static Badge](https://img.shields.io/badge/delete-d08159?style=flat) button removes the beer from the database. 
+---  
+
+### A note about brewery logos:
+Creating new brewery logos is outside the scope of this particular document, but they must be in SVG format, a single layer whose ID is "logo-face," and the fill color must be *unset* so that the javascript theming engine can write this value. I may at some point create a tool that aids in the logo creation process.  
+### How the beer-database.json is formatted:  
+A single entry:
+```
+{
+  "id": "0fbc3j77",
+  "brewery": "2 towns",
+  "title": "brightcider",
+  "city": "corvallis",
+  "state": "or",
+  "style": "hard apple cider",
+  "abv": "6.0",
+  "logoPath": "2towns.svg"
+},
+```
+The `id` field is the beer's "beerID." This is randomly generated and assigned to a beer on creation. The other fields should be pretty self-explanatory.
+
+
+--- 
 <details>
 <summary>Release Notes</summary>
 
@@ -57,15 +90,9 @@ which it slowly drifts by while spinning like a derelict satellite, and "combat,
 alien sprite flies by and the GK ship follows, shooting at it.
 
 - **v1.4 07.20.2025:**
-  - Duplicated taplist and taplist editor into red and blue sides, edited all necessary logic including
-PHP calls and JSON organization etc in order to have two separate taplists that share resources but
-have independent formatting and saving.
-  - Removed theming engine per owner request, but left code in, only commented out. If anybody in the
-future wants to re-implement the theming you can uncomment the the marked lines in the editor files to
-restore the theme control. Themes can be added/modified with the structure in styles.css. I left it all 
-in, just in case.
-  - Fixed a bug in the spaceship spawning that prevented it from spawning from the left or top sides of
-the screen.
+  - Duplicated taplist and taplist editor into red and blue sides, edited all necessary logic including PHP calls and JSON organization etc in order to have two separate taplists that share resources but have independent formatting and saving.
+  - Removed theming engine per owner request, but left code in, only commented out. If anybody in the future wants to re-implement the theming you can uncomment the the marked lines in the editor files to restore the theme control. Themes can be added/modified with the structure in styles.css. I left it all in, just in case.
+  - Fixed a bug in the spaceship spawning that prevented it from spawning from the left or top sides of the screen.
 
 ## [DB Editor]
 - **v.1 07.24.25**
@@ -96,5 +123,10 @@ the screen.
 ## Taplister
 - **v1.0 07.30.25**
   - Switched the way JSONs were formatted and read from indexes to "beer ID" system, where each beer is given a unique 8 character identifier. Changed all logic to work with this new format.
-  - Moved all JSON, PHP, and CSS into their own folders because root directory was getting cluttered. Will continue to tweak but considering this deployable.
+  - Moved all JSON, PHP, and CSS into their own folders because root directory was getting cluttered. Will continue to tweak but considering this deployable.  
+
+  Todo:  
+  - Noticed bug where clicking "delete" from the add new beer card simply removes the first listing from the database. Remove delete button from "add new beer" card?
+  - Limit ABV field to numbers?
+  - Limit state field to two characters
 </details>

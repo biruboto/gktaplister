@@ -149,13 +149,12 @@ function populateLogoDropdown(selected = "") {
   // Clean selected value: only filename
   selected = selected.replace(/^.*[\\/]/, ""); 
   const logoSel = document.getElementById('logoPath');
-  logoSel.innerHTML = `<option value="">-- Select Logo --</option>`;
+  logoSel.innerHTML = `<option value="">= select logo =</option>`;
   logoFiles.forEach(path => {
     const filename = path.replace(/^.*[\\/]/, "");
     logoSel.innerHTML += `<option value="${filename}" ${selected===filename?"selected":""}>${filename}</option>`;
   });
 }
-
 
 // Build the table for show-all-beers view
 function buildBeerTable() {

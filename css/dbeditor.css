@@ -197,7 +197,7 @@
 }
 .save { background: #544e68; color: #fff; }
 .delete { background: #d08159; color: #fff; }
-.cancel { background: #333a; color: #fff; border: 1px solid #666;}
+.cancel { background: #333333; color: #fff; border: 1px solid #666;}
 .button-bar button:hover { filter: brightness(1.13);}
 @media (max-width: 660px) {
   .beer-card-grid { flex-direction: column; gap: 0.9em;}

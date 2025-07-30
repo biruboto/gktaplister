@@ -1,5 +1,45 @@
 [
     {
+        "id": "j7zu5f8b",
+        "brewery": "boneyard",
+        "title": "rpm ipa",
+        "city": "bend",
+        "state": "or",
+        "style": "american ipa",
+        "abv": "6.5",
+        "logoPath": "boneyard.svg"
+    },
+    {
+        "id": "rc53s7wz",
+        "brewery": "sunriver",
+        "title": "fuzztail",
+        "city": "sunriver",
+        "state": "or",
+        "style": "hefeweizen",
+        "abv": "5.0",
+        "logoPath": "sunriver.svg"
+    },
+    {
+        "id": "16rqbnv8",
+        "brewery": "double mountain",
+        "title": "basic rights",
+        "city": "hood river",
+        "state": "or",
+        "style": "american ipa",
+        "abv": "6.5",
+        "logoPath": "doublemountain.svg"
+    },
+    {
+        "brewery": "deschutes",
+        "title": "black butte",
+        "city": "bend",
+        "state": "or",
+        "style": "american porter",
+        "abv": "5.5",
+        "logoPath": "deschutes.svg",
+        "id": "nspjwzwr"
+    },
+    {
         "id": "y6cfdc6z",
         "brewery": "hopworks",
         "title": "robot panda",
