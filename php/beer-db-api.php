@@ -20,10 +20,10 @@ if (isset($_GET['backup'])) {
 
 // If the request is for the logo list, return it
 if (isset($_GET['logos'])) {
-    $logoDir = __DIR__ . '/logos';
+    $logoDir = __DIR__ . '/../logos';
     $files = [];
     foreach (glob($logoDir . '/*.svg') as $file) {
-        $files[] = '/logos/' . basename($file);
+        $files[] = './logos/' . basename($file);
     }
     header('Content-Type: application/json');
     echo json_encode($files);

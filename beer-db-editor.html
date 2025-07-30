@@ -296,8 +296,9 @@ if (res.ok) {
   startBeerSlide();   // <--- THIS TRIGGERS THE ANIMATION!
   setTimeout(() => statusDiv.textContent = "", 3000);
   populateDropdown();
-  fillBeerCard(currentBeerIndex); // always fills the last added or edited
   buildBeerTable();
+  beerDropdown.value = "-1"; // make sure "show all" stays selected
+  beerDropdown.onchange();   // triggers the right view (table, not card)
 }
 };
 
@@ -347,7 +348,7 @@ tbody.onclick = async function(e) {
 
 document.getElementById('backupDbBtn').onclick = async function() {
   statusDiv.textContent = 'Backing up...';
-  const res = await fetch('beer-db-api.php?backup', { method: 'POST' });
+  const res = await fetch('php/beer-db-api.php?backup', { method: 'POST' });
   if (res.ok) {
     const txt = await res.text();
     statusDiv.textContent = 'Backup created: ' + txt;
@@ -399,8 +400,7 @@ const canvas = document.getElementById('tapperAnim');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-
-// Asset filenames (swap for yours!)
+// Asset filenames
 const barImg = new Image();
 barImg.src = './sprites/bar.png'; // 290x96
 const bartenderImg = new Image();
