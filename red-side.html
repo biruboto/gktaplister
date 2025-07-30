@@ -892,7 +892,28 @@ Promise.all([
 .then(([data, masterList]) => {
   // 1. Apply theme
   document.body.setAttribute('data-theme', data.theme || 'default');
-  getComputedStyle(document.body).getPropertyValue('--logo-face'); // Force reflow
+  void document.body.offsetWidth; // Force reflow for new CSS vars
+
+  // 1.5. (NEW) Theme the taplist logo!
+  const logo = document.getElementById('taplist-logo');
+  if (logo) {
+    // If already loaded (sometimes the object is cached and ready)
+    if (logo.contentDocument && logo.contentDocument.readyState === 'complete') {
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
+      });
+    }
+    // Always attach event in case it loads asynchronously
+    logo.addEventListener('load', () => {
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
+      });
+    });
+  }
 
   // 2. Refresh token logic
   if (currentRefreshToken === null) {
@@ -971,35 +992,58 @@ Promise.all([
 </script>
 
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-
-  const logo = document.getElementById('taplist-logo');
-if (logo) {
-  logo.addEventListener('load', () => {
-  console.log('SVG logo loaded and being themed!');
-    styleTaplistLogo({
-      shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
-      face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
-      highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
-    });
-  });
-}
-});
 function styleTaplistLogo({ shadow, face, highlight }) {
+  console.log('SVG Theming with:', {shadow, face, highlight});
+
   const logo = document.getElementById('taplist-logo');
-  if (!logo || !logo.contentDocument) return;
+  if (!logo) return;
+  let attempts = 0, maxAttempts = 25;
 
-  const svg = logo.contentDocument;
-
-  const shadowEl = svg.querySelector('.logo-shadow');
-  const faceEl = svg.querySelector('.logo-face');
-  const highlightEl = svg.querySelector('.logo-highlight');
-
-  if (shadowEl) shadowEl.style.fill = shadow;
-  if (faceEl) faceEl.style.fill = face;
-  if (highlightEl) highlightEl.style.fill = highlight;
+  function tryTheme() {
+    const svgDoc = logo.contentDocument;
+    if (!svgDoc) {
+      if (attempts++ < maxAttempts) return setTimeout(tryTheme, 50);
+      return;
+    }
+    const shadowEl = svgDoc.querySelector('.logo-shadow');
+    const faceEl = svgDoc.querySelector('.logo-face');
+    const highlightEl = svgDoc.querySelector('.logo-highlight');
+    if (shadowEl && faceEl && highlightEl) {
+      shadowEl.style.fill = shadow;
+      faceEl.style.fill = face;
+      highlightEl.style.fill = highlight;
+      // console.log('Logo themed successfully!');
+    } else if (attempts++ < maxAttempts) {
+      setTimeout(tryTheme, 50);
+    } else {
+      console.warn('Taplist logo could not be themed (SVG not ready)');
+    }
+  }
+  // Initial slight delay helps in some browsers
+  setTimeout(tryTheme, 50);
 }
 
+window.addEventListener('DOMContentLoaded', () => {
+  const logo = document.getElementById('taplist-logo');
+  if (logo) {
+    logo.addEventListener('load', () => {
+      // Always retry multiple times even after load
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
+      });
+    });
+    // Sometimes, the SVG is cached and already loaded, so you need to check!
+    if (logo.contentDocument && logo.contentDocument.readyState === 'complete') {
+      styleTaplistLogo({
+        shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
+        face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),
+        highlight: getComputedStyle(document.body).getPropertyValue('--logo-highlight').trim()
+      });
+    }
+  }
+});
 </script>
 </body>
 </html
