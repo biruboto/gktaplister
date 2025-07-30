@@ -30,14 +30,14 @@
         "logoPath": "doublemountain.svg"
     },
     {
-        "id": "nspjwzwr",
         "brewery": "deschutes",
         "title": "black butte",
         "city": "bend",
         "state": "or",
         "style": "american porter",
         "abv": "5.5",
-        "logoPath": "deschutes.svg"
+        "logoPath": "deschutes.svg",
+        "id": "nspjwzwr"
     },
     {
         "id": "y6cfdc6z",
@@ -70,7 +70,7 @@
         "logoPath": "gigantic.svg"
     },
     {
-        "id": "jp2rvql2",
+        "id": "0fbc3j77",
         "brewery": "2 towns",
         "title": "brightcider",
         "city": "corvallis",
@@ -158,25 +158,5 @@
         "style": "american stout",
         "abv": "5.7",
         "logoPath": "gigantic.svg"
-    },
-    {
-        "id": "mkwncq1e",
-        "brewery": "crimp",
-        "title": "skivvy",
-        "city": "dizzle",
-        "state": "sw",
-        "style": "diesel",
-        "abv": "5.3",
-        "logoPath": "upright.svg"
-    },
-    {
-        "id": "8vuhnh0w",
-        "brewery": ";lkj;lkj",
-        "title": "uiuyt",
-        "city": "khk",
-        "state": "jh",
-        "style": "iuyiuy",
-        "abv": "4.4",
-        "logoPath": "hopworks.robotpanda.svg"
     }
 ]

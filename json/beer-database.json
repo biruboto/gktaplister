@@ -30,14 +30,14 @@
         "logoPath": "doublemountain.svg"
     },
     {
-        "id": "nspjwzwr",
         "brewery": "deschutes",
         "title": "black butte",
         "city": "bend",
         "state": "or",
         "style": "american porter",
         "abv": "5.5",
-        "logoPath": "deschutes.svg"
+        "logoPath": "deschutes.svg",
+        "id": "nspjwzwr"
     },
     {
         "id": "y6cfdc6z",
