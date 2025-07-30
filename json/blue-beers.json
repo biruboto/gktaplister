@@ -1,25 +1,9 @@
 {
   "theme": "blue side",
-  "refreshToken": "zmn1bp6nc5",
+  "refreshToken": "feslv48btx6",
   "beers": [
     {
-      "id": "jp2rvql2",
-      "soldOut": false
-    },
-    {
-      "id": "iuj2fssp",
-      "soldOut": false
-    },
-    {
-      "id": "t6hebfc6",
-      "soldOut": false
-    },
-    {
-      "id": "z1797mna",
-      "soldOut": true
-    },
-    {
-      "id": "j7zu5f8b",
+      "id": "y6cfdc6z",
       "soldOut": false
     },
     {
@@ -27,7 +11,23 @@
       "soldOut": false
     },
     {
-      "id": "nspjwzwr",
+      "id": "z1797mna",
+      "soldOut": false
+    },
+    {
+      "id": "cka7ifts",
+      "soldOut": false
+    },
+    {
+      "id": "vjkdpxbs",
+      "soldOut": false
+    },
+    {
+      "id": "p7o6yl3m",
+      "soldOut": false
+    },
+    {
+      "id": "iuj2fssp",
       "soldOut": false
     },
     {

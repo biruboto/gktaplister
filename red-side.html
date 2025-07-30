@@ -247,7 +247,6 @@
   }
 
 function animateStarfield() {
-  console.log("drawing starfield")
   const bgColor = getComputedStyle(document.body).getPropertyValue('--starfield-bg').trim();
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, width, height);
@@ -940,7 +939,6 @@ Promise.all([
           const color = getComputedStyle(document.body).getPropertyValue('--logo-face').trim();
           if (logoFace) {
             logoFace.style.fill = color;
-            console.log(`Styled logo for ${beer.brewery} with color: ${color}`);
           }
         } else if (attempts < maxAttempts) {
           attempts++;
@@ -978,6 +976,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const logo = document.getElementById('taplist-logo');
 if (logo) {
   logo.addEventListener('load', () => {
+  console.log('SVG logo loaded and being themed!');
     styleTaplistLogo({
       shadow: getComputedStyle(document.body).getPropertyValue('--logo-shadow').trim(),
       face: getComputedStyle(document.body).getPropertyValue('--logo-face').trim(),

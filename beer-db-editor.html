@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Beer Database Editor (Card Style)</title>
+  <title>GK Beer DB Editor</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="css/dbeditor.css">
 </head>
@@ -321,7 +321,7 @@ document.getElementById('deleteBeer').onclick = async function() {
     statusDiv.textContent = "Deleted!";
     setTimeout(() => statusDiv.textContent = "", 2000);
     populateDropdown();
-    beerDropdown.value = "-1";
+    beerDropdown.value = "";
     beerDropdown.onchange();
     buildBeerTable();
   } else {
