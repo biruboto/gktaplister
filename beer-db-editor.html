@@ -206,7 +206,6 @@ function makeLogoDropdownTable(selected) {
   const filename = path.replace(/^.*[\\/]/, "");
   html += `<option value="${filename}" ${selected===filename?"selected":""}>${filename}</option>`;
 });
-
   html += `</select>`;
   return html;
 }
@@ -283,7 +282,8 @@ beerForm.onsubmit = async function(e) {
     beers.push(beer);
     currentBeerIndex = beers.length - 1;
   } else {
-    // EDIT MODE: update existing beer
+    // EDIT MODE: preserve existing id!
+    beer.id = beers[currentBeerIndex].id; // <---- This line is key!
     beers[currentBeerIndex] = beer;
   }
 

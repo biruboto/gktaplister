@@ -869,7 +869,7 @@ Promise.all([
 
     const objectEl = document.createElement('object');
     objectEl.setAttribute('type', 'image/svg+xml');
-    objectEl.setAttribute('data', beer.logoPath);
+    objectEl.setAttribute('data', `/logos/${beer.logoPath}`);
     objectEl.classList.add('logo');
     objectEl.style.width = '100%';
     objectEl.style.height = '100%';

@@ -70,7 +70,7 @@
         "logoPath": "gigantic.svg"
     },
     {
-        "id": "0fbc3j77",
+        "id": "jp2rvql2",
         "brewery": "2 towns",
         "title": "brightcider",
         "city": "corvallis",
@@ -160,13 +160,23 @@
         "logoPath": "gigantic.svg"
     },
     {
-        "id": "v2kexnbo",
-        "brewery": "lk;j",
-        "title": "kjgjhg",
-        "city": "asdlfkj",
-        "state": "as",
-        "style": "yut",
-        "abv": "2.2",
-        "logoPath": "doublemountain.svg"
+        "id": "mkwncq1e",
+        "brewery": "crimp",
+        "title": "skivvy",
+        "city": "dizzle",
+        "state": "sw",
+        "style": "diesel",
+        "abv": "5.3",
+        "logoPath": "upright.svg"
+    },
+    {
+        "id": "8vuhnh0w",
+        "brewery": ";lkj;lkj",
+        "title": "uiuyt",
+        "city": "khk",
+        "state": "jh",
+        "style": "iuyiuy",
+        "abv": "4.4",
+        "logoPath": "hopworks.robotpanda.svg"
     }
 ]
