@@ -7,7 +7,7 @@
         "style": "american ipa",
         "abv": "6.5",
         "logoPath": ".\/logos\/boneyard.svg",
-        "id": "t4r9j064"
+        "id": "9kznxozg"
     },
     {
         "brewery": "sunriver",
@@ -17,7 +17,7 @@
         "style": "hefeweizen",
         "abv": "5.0",
         "logoPath": ".\/logos\/sunriver.svg",
-        "id": "xkxstcpl"
+        "id": "irnjbgxt"
     },
     {
         "brewery": "double mountain",
@@ -27,7 +27,7 @@
         "style": "american ipa",
         "abv": "6.5",
         "logoPath": ".\/logos\/doublemountain.svg",
-        "id": "f0jwy4yd"
+        "id": "t00uri5a"
     },
     {
         "brewery": "deschutes",
@@ -36,8 +36,7 @@
         "state": "or",
         "style": "american porter",
         "abv": "5.5",
-        "logoPath": ".\/logos\/deschutes.svg",
-        "id": "xqr00r72"
+        "logoPath": ".\/logos\/deschutes.svg"
     },
     {
         "brewery": "hopworks",
@@ -47,7 +46,7 @@
         "style": "hazy ipa",
         "abv": "6.2",
         "logoPath": ".\/logos\/hopworks.robotpanda.svg",
-        "id": "h2xtuhko"
+        "id": "czdfbt8s"
     },
     {
         "brewery": "portland cider co",
@@ -57,17 +56,17 @@
         "style": "hard apple & berry cider",
         "abv": "6.5",
         "logoPath": ".\/logos\/portlandcider.svg",
-        "id": "b9dbl3xa"
+        "id": "akbbu9r7"
     },
     {
         "brewery": "gigantic",
-        "title": "sassy pony pale",
+        "title": "sassy pony pale test",
         "city": "portland",
         "state": "or",
         "style": "american pale ale",
         "abv": "5.8",
         "logoPath": ".\/logos\/gigantic.svg",
-        "id": "wi58e4kf"
+        "id": "32k0w6a6"
     },
     {
         "brewery": "2 towns",
@@ -77,7 +76,7 @@
         "style": "hard apple cider",
         "abv": "6.0",
         "logoPath": ".\/logos\/2towns.svg",
-        "id": "ovlh9dxf"
+        "id": "cquw6y5b"
     },
     {
         "brewery": "rogue",
@@ -87,7 +86,7 @@
         "style": "kolsch",
         "abv": "5.0",
         "logoPath": ".\/logos\/rogue.svg",
-        "id": "xpes0p1i"
+        "id": "32bjqyye"
     },
     {
         "brewery": "seekout",
@@ -97,7 +96,7 @@
         "style": "hard seltzer",
         "abv": "5.0",
         "logoPath": ".\/logos\/seekout.svg",
-        "id": "yeibr8zg"
+        "id": "v769se7v"
     },
     {
         "brewery": "upright",
@@ -107,7 +106,7 @@
         "style": "german pilsner",
         "abv": "4.6",
         "logoPath": ".\/logos\/upright.svg",
-        "id": "gaapyeuj"
+        "id": "x73x1dco"
     },
     {
         "brewery": "ablis",
@@ -117,7 +116,7 @@
         "style": "sparkling cbd soda",
         "abv": "0.0",
         "logoPath": ".\/logos\/ablis.svg",
-        "id": "jhvsvtoe"
+        "id": "zh746g9t"
     },
     {
         "brewery": "level",
@@ -127,7 +126,7 @@
         "style": "american ipa",
         "abv": "6.5",
         "logoPath": ".\/logos\/level.svg",
-        "id": "kidmdibz"
+        "id": "7b1mjnr3"
     },
     {
         "brewery": "pfriem",
@@ -137,7 +136,7 @@
         "style": "hazy ipa",
         "abv": "6.8",
         "logoPath": ".\/logos\/pfriem.svg",
-        "id": "xh94wjei"
+        "id": "v4wll4hu"
     },
     {
         "brewery": "hopworks",
@@ -147,7 +146,7 @@
         "style": "organic pale ale",
         "abv": "5.4",
         "logoPath": ".\/logos\/hopworks.svg",
-        "id": "d9hdgnw1"
+        "id": "easdgzx2"
     },
     {
         "brewery": "gigantic",
@@ -157,6 +156,6 @@
         "style": "american stout",
         "abv": "5.7",
         "logoPath": ".\/logos\/gigantic.svg",
-        "id": "kl4dbluc"
+        "id": "4p6k6z6x"
     }
 ]

@@ -277,8 +277,8 @@ beerForm.onsubmit = async function(e) {
   if (currentBeerIndex === null) {
     // ADD NEW BEER MODE: append to end of beers array
     beer.id = generateBeerId();
-beers.push(beer);
-currentBeerIndex = beers.length - 1;
+    beers.push(beer);
+    currentBeerIndex = beers.length - 1;
   } else {
     // EDIT MODE: update existing beer
     beers[currentBeerIndex] = beer;
@@ -291,15 +291,18 @@ currentBeerIndex = beers.length - 1;
     body: JSON.stringify(beers)
   });
 
-if (res.ok) {
-  statusDiv.textContent = "Saved!";
-  startBeerSlide();   // <--- THIS TRIGGERS THE ANIMATION!
-  setTimeout(() => statusDiv.textContent = "", 3000);
-  populateDropdown();
-  buildBeerTable();
-  beerDropdown.value = "-1"; // make sure "show all" stays selected
-  beerDropdown.onchange();   // triggers the right view (table, not card)
-}
+  if (res.ok) {
+    statusDiv.textContent = "Saved!";
+    startBeerSlide();   // <--- THIS TRIGGERS THE ANIMATION!
+    setTimeout(() => statusDiv.textContent = "", 3000);
+    populateDropdown();
+    buildBeerTable();
+
+    // Only switch to "show all" if that's what the user was doing!
+    // Otherwise, stay on current beer card
+    beerDropdown.value = currentBeerIndex;
+    beerDropdown.onchange();
+  }
 };
 
 // Delete single beer handler
@@ -373,7 +376,7 @@ document.getElementById('saveAllBtn').onclick = async function() {
     });
     if (Object.values(beer).some(val => val)) newBeers.push(beer);
   });
-  // <<-- Here! Assign IDs to any missing
+  // Assign IDs to any missing
   beers = newBeers.map(b => {
     if (!b.id) b.id = generateBeerId();
     return b;
@@ -389,8 +392,11 @@ document.getElementById('saveAllBtn').onclick = async function() {
     startBeerSlide();
     setTimeout(() => statusDiv.textContent = "", 3000);
     populateDropdown();
-    fillBeerCard(currentBeerIndex);
     buildBeerTable();
+    beerDropdown.value = "-1"; // <-- stay in "show all"
+    // DO NOT call fillBeerCard(currentBeerIndex)!
+    // DO NOT call beerDropdown.onchange()!
+    // Table view will persist
   } else {
     statusDiv.textContent = "Error saving!";
   }
