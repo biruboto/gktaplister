@@ -28,8 +28,23 @@ The taplist itself is basically fully autonomous and shouldn't ever really need 
 Everything from theming to the scaling of the text and images is handled automatically through javascript and should Just Work™. Changes to the tap list on either side are made through the *Taplist Editors*.
 <h1 style="color: #fabd2f;">Taplist Editors</h1>  
 
-The Taplist Editors are the primary pages bartenders/managers/promotions will be dealing with to modify the live tap lists. Again, this is `red-side-editor.html` on red side and `blue-side-editor.html` on the blue side. These pages will ideally be bookmarked on each side's iPad and can be quickly pulled up to swap a keg to another beer, or mark a tap as temporarily sold out. There is no need to do anything on the tap list's end (for example, a refresh or reboot). Each tap list has a "refresh token" that it checks every 10 seconds, and when the ![Static Badge](https://img.shields.io/badge/💾_save_changes-00faff?style=flat) button is clicked, a new refresh token is generated that tells the tap list to refresh itself.  
-If you are switching a keg/tap to a beer that does not exist in the Taplist Editor, that is when you move to the *Beer Database Editor*. 
+The Taplist Editors are the primary pages bartenders/managers/promotions will be dealing with to modify the live tap lists. Again, this is `red-side-editor.html` on red side and `blue-side-editor.html` on the blue side. These pages will ideally be bookmarked on each side's iPad and can be quickly pulled up to swap a keg to another beer, or mark a tap as temporarily sold out. There is no need to do anything on the tap list's end (for example, a refresh or reboot). Each tap list has a "refresh token" that is checked every 10 seconds, and when the ![Static Badge](https://img.shields.io/badge/💾_save_changes-00faff?style=flat) button is clicked, a new refresh token is generated that tells the tap list to refresh itself.  
+
+### About the `red-beers.json` and `blue-beers.json` files: ###  
+The `red-beers.json` and `blue-beers.json` files, again, shouldn't really ever need to be modified or manipulated by employees, but for demystification purposes let's go over the format of the files a bit.  
+Example data in `blue-beers.json:`
+```
+  "theme": "blue side",
+  "refreshToken": "feslv48btx6",
+  "beers": [
+    {
+      "id": "y6cfdc6z",
+      "soldOut": false
+    },
+```
+The first piece of information tells the taplist which CSS style (or theme) to apply. In red-beers.json, this obviously reads `"theme": "red side",`. The second piece of information is the aforementioned refreshToken, which is randomly generated, and the tap lists check for changes to this token every 10 seconds. When the taps are modified or marked as sold out, a new token is written, the tap list recognizes this change, and refreshes the page. Next is the list of beers for each side. There will be 8 entries on blue side and 12 entries on red side. The only two pieces of data required are the "BeerID" (see Beer Database Editor section), which tells the taplist which beer's information to load (brewery name, abv, city/state, logo, etc). The only other piece of information is the "soldOut" flag, which tells the tap list whether a beer is available or not, which bartenders can change by selecting "SOLD OUT" on the Taplist Editor.  
+
+If you are switching a keg/tap to a beer that does not already exist in the Taplist Editor, that is when you move to the *Beer Database Editor*. 
 <h1 style="color: #fabd2f;">Database Editor</h1>
 
 When the Beer DB Editor is launched, initially two options are presented. The ![Static Badge](https://img.shields.io/badge/💾_backup_database-blue?style=flat) button simply creates a copy of the existing `beer-database.json` in the /json folder with the time and date appended to the filename (e.g. `beer-database-backup-20250729-220947.json`). It's probably a good idea to click this before making any changes. The **(choose a beer...)** dropdown contains all editing tools.  
@@ -48,7 +63,7 @@ When the Beer DB Editor is launched, initially two options are presented. The ![
 ### A note about brewery logos:
 Creating new brewery logos is outside the scope of this particular document, but they must be in SVG format, a single layer whose ID is "logo-face," and the fill color must be *unset* so that the javascript theming engine can write this value. I may at some point create a tool that aids in the logo creation process.  
 In the meantime, here is a full video demonstration on logo creation:  
-![Static Badge](https://img.shields.io/badge/YouTube_▶-red?style=flat&logo=youtube) **[GK Taplister: How to Create New Brewery Logo Files](https://www.youtube.com/watch?v=B-KgX5yj-r8)**
+![Static Badge](https://img.shields.io/badge/YouTube_→-red?style=flat&logo=youtube) **[GK Taplister: How to Create New Brewery Logo Files](https://www.youtube.com/watch?v=B-KgX5yj-r8)**
 ### How the beer-database.json is formatted:  
 A single entry:
 ```
