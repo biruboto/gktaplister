@@ -126,8 +126,6 @@ alien sprite flies by and the GK ship follows, shooting at it.
   - Moved all JSON, PHP, and CSS into their own folders because root directory was getting cluttered. Will continue to tweak but considering this deployable.  
 
   Todo:  
-  - Noticed bug where clicking "delete" from the add new beer card simply removes the first listing from the database. Remove delete button from "add new beer" card?
-  - Limit ABV field to numbers?
   - Limit state field to two characters
   - Add motion to tap list logo?
 </details>
