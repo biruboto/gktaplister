@@ -118,5 +118,15 @@
         "style": "american stout",
         "abv": "5.7",
         "logoPath": "gigantic.svg"
+    },
+    {
+        "id": "1fjidozb",
+        "brewery": "happy",
+        "title": "gilmore",
+        "city": "casper",
+        "state": "wy",
+        "style": "tootsie roll",
+        "abv": "3.4",
+        "logoPath": "widmer.svg"
     }
 ]

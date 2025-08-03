@@ -280,6 +280,25 @@ src: url('/fonts/Orbitron.otf') format('opentype');
 
 /* End Themes */
 
+.scanline-overlay {
+  pointer-events: none; /* So clicks pass through */
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  z-index: 9999; /* or above your UI but below modals, as needed */
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.16) 0px,      /* dark line */
+      rgba(0,0,0,0.16) 1px,
+      rgba(0,0,0,0.02) 3px,      /* lighter "rest" */
+      rgba(0,0,0,0.02) 4px
+    );
+  pointer-events: none; /* Don't block clicks */
+  mix-blend-mode: multiply; /* Optional: punchier effect */
+}
+
+
 html, body {
   margin: 0;
   padding: 0;
@@ -477,6 +496,18 @@ canvas#battleCanvas {
 }
 
 /* This part controls the animation for the neon glow on TAP LIST */
+@keyframes logoWobble {
+  0% { transform: translateY(0px) scale(1);}
+  25% { transform: translateY(-2px) scale(1.01);}
+  50% { transform: translateY(1px) scale(0.99);}
+  75% { transform: translateY(-1.5px) scale(1.005);}
+  100% { transform: translateY(0px) scale(1);}
+}
+#logoSvg {
+  animation: logoWobble 3.4s ease-in-out infinite;
+  /* Optional: */
+  filter: drop-shadow(0 1px 4px gold);
+}
 
 .neon-header-img {
   position: absolute;
