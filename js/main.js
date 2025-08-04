@@ -26,8 +26,11 @@ function resizeTextAll() {
 }
 
 // Main code!
+  const side = document.body.getAttribute('data-side') || 'red'; // default to red
+const jsonFile = `json/${side}-beers.json`;
+
 Promise.all([
-  fetch('json/red-beers.json', { cache: 'no-store' }).then(res => res.json()),
+  fetch(jsonFile, { cache: 'no-store' }).then(res => res.json()),
   fetch('json/beer-database.json').then(res => res.json())
 ])
 .then(([data, masterList]) => {
