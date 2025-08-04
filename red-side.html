@@ -205,6 +205,7 @@
   const ctx = canvas.getContext('2d');
 
   let width, height, stars = [], layers = [], time = 0;
+  let lastStarfieldTime = performance.now();
 
   function hexToRGBA(hex, alpha) {
     const bigint = parseInt(hex.replace("#", ""), 16);
@@ -246,50 +247,62 @@
     });
   }
 
-function animateStarfield() {
+function animateStarfield(now) {
+  if (typeof now !== 'number') now = performance.now();
+  const delta = (now - lastStarfieldTime) / 1000; // seconds
+  lastStarfieldTime = now;
+
+  // You can tweak these speeds to taste:
+  const STAR_SPEED = 80;   // units per second (was 1 per frame, now 80 per sec for similar speed at 60fps)
+  const DRIFT_SPEED_X = 0.001;
+  const DRIFT_SPEED_Y = 0.0012;
+  const DRIFT_AMOUNT = 0.01;
+
   const bgColor = getComputedStyle(document.body).getPropertyValue('--starfield-bg').trim();
   ctx.fillStyle = bgColor;
   ctx.fillRect(0, 0, width, height);
 
-    const driftX = Math.sin(time * 0.001) * 0.01 * width;
-    const driftY = Math.cos(time * 0.0012) * 0.01 * height;
+  // Use time as "seconds elapsed" instead of a frame count
+  time += delta;
 
-    stars.forEach(star => {
-      star.z -= 1;
-      if (star.z <= 0) {
-        const zRange = star.layer.zRange;
-        star.z = Math.random() * (zRange[1] - zRange[0]) + zRange[0];
-        star.x = Math.random() * width;
-        star.y = Math.random() * height;
-      }
+  const driftX = Math.sin(time * DRIFT_SPEED_X) * DRIFT_AMOUNT * width;
+  const driftY = Math.cos(time * DRIFT_SPEED_Y) * DRIFT_AMOUNT * height;
 
-      const k = 128.0 / star.z;
-      const centerX = width / 2 + Math.sin(time * 0.001) * width * 0.1;
-      const centerY = height / 2 + Math.cos(time * 0.0013) * height * 0.1;
-      const px = (star.x - centerX) * k + centerX;
-      const py = (star.y - centerY) * k + centerY;
+  stars.forEach(star => {
+    star.z -= STAR_SPEED * delta;
+    if (star.z <= 0) {
+      const zRange = star.layer.zRange;
+      star.z = Math.random() * (zRange[1] - zRange[0]) + zRange[0];
+      star.x = Math.random() * width;
+      star.y = Math.random() * height;
+    }
 
-      const size = (1 - star.z / width) * 2;
+    const k = 128.0 / star.z;
+    const centerX = width / 2 + Math.sin(time * DRIFT_SPEED_X) * width * 0.1;
+    const centerY = height / 2 + Math.cos(time * 0.0013) * height * 0.1;
+    const px = (star.x - centerX) * k + centerX;
+    const py = (star.y - centerY) * k + centerY;
 
-      star.o += (Math.random() - 0.5) * 0.05;
-      star.o = Math.max(0.1, Math.min(1, star.o));
+    const size = (1 - star.z / width) * 2;
 
-      if (star.layer.blur) {
-        ctx.shadowBlur = 5;
-        ctx.shadowColor = star.color;
-      } else {
-        ctx.shadowBlur = 0;
-      }
+    star.o += (Math.random() - 0.5) * 0.05;
+    star.o = Math.max(0.1, Math.min(1, star.o));
 
-      ctx.beginPath();
-      ctx.arc(px, py, size, 0, Math.PI * 2);
-      ctx.fillStyle = hexToRGBA(star.color, star.o);
-      ctx.fill();
-    });
+    if (star.layer.blur) {
+      ctx.shadowBlur = 5;
+      ctx.shadowColor = star.color;
+    } else {
+      ctx.shadowBlur = 0;
+    }
 
-    time += 1;
-    requestAnimationFrame(animateStarfield);
-  }
+    ctx.beginPath();
+    ctx.arc(px, py, size, 0, Math.PI * 2);
+    ctx.fillStyle = hexToRGBA(star.color, star.o);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animateStarfield);
+}
 
   window.addEventListener('resize', resizeCanvas);
   resizeCanvas();
