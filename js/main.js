@@ -13,12 +13,14 @@ function autoResizeText(selector, maxSize = 80, minSize = 12, step = 1) {
     el.style.textOverflow = 'unset';
     let fontSize = maxSize;
     el.style.fontSize = fontSize + 'px';
-    while ((el.scrollWidth > el.clientWidth + 0.5) && fontSize > minSize) {
+    while ((el.scrollWidth > el.clientWidth) && fontSize > minSize) {
       fontSize -= step;
       el.style.fontSize = fontSize + 'px';
+      void el.offsetWidth; // force reflow
     }
   });
 }
+
 
 function resizeTextAll() {
   autoResizeText('.beer-name-wrapper', 72, 16);
