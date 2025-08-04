@@ -614,13 +614,14 @@ function fireBullet() {
     const bulletY = cy + rotatedY;
 
     // Bullet speed (in direction of ship)
-    const bulletSpeed = 8;
+    const bulletSpeed = 1000;
 
     bullets.push({
       x: bulletX,
       y: bulletY,
-      vx: Math.cos(angleRad) * bulletSpeed,
-      vy: Math.sin(angleRad) * bulletSpeed,
+     vx: Math.cos(angleRad) * bulletSpeed + ship.vx,
+vy: Math.sin(angleRad) * bulletSpeed + ship.vy,
+
       radius: 1 * scale, // Small bullets
       life: 240
     });
@@ -631,16 +632,17 @@ function maybeActivateShip() {
 
   if (!ship.active) {
     ship.active = true;    
+ship.mode = 'combat';
 
     // (choose a mode)
-  const rand = Math.random();
+/*   const rand = Math.random();
     if (rand < 0.1) {
     ship.mode = 'broken';
     } else if (rand < 0.4) {
     ship.mode = 'combat';
     } else {
     ship.mode = 'normal';
-    }
+    } */
 
     ship.scale = Math.floor(Math.random() * 4) + 1;
 
@@ -698,8 +700,8 @@ ship.y = spawnY;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
     const baseSpeed = ship.mode === 'broken'
-  ? (0.8 + Math.random() * 0.3) * 60
-  : (2 + Math.random() * 2) * 60;
+  ? (0.8 + Math.random() * 0.8) * 60
+  : (2 + Math.random() * 6) * 60;
 
     ship.vx = (dx / dist) * baseSpeed;
     ship.vy = (dy / dist) * baseSpeed;
@@ -737,10 +739,10 @@ function battleAnimate(now) {
   // --- EARLY DEACTIVATION CHECK ---
   const buffer = 100;
   const timeLimit = ship.mode === 'broken'
-    ? 3.0  // was 3000 frames, now 3 seconds (tweak as needed)
-    : ship.mode === 'combat'
-      ? 1.5 // was 1500 frames, now 1.5 seconds
-      : 1.2; // was 1200 frames, now 1.2 seconds
+  ? 50.0   // 3000/60
+  : ship.mode === 'combat'
+    ? 25.0  // 1500/60
+    : 20.0; // 1200/60
 
   if (
     ship.x < -buffer || ship.x > battleWidth + buffer ||
@@ -773,7 +775,7 @@ function battleAnimate(now) {
     if (bulletTimer >= nextBulletInterval) {
       fireBullet();
       bulletTimer = 0;
-      nextBulletInterval = 10 + Math.floor(Math.random() * 100); // random between 12 and 28
+      nextBulletInterval = 5 + Math.floor(Math.random() * 50); // random between 12 and 28
     }
 
     const forwardOffset = 200;
@@ -793,7 +795,7 @@ function battleAnimate(now) {
 
     // --- BOBBING LOGIC ---
     const bobAmplitude = 50;
-    const bobFrequency = 0.02;
+    const bobFrequency = 2.0;
     const bobOffset = Math.sin(ship.timer * bobFrequency) * bobAmplitude;
     const perpAngle = angleRad + Math.PI / 2;
     alienX += Math.cos(perpAngle) * bobOffset;
@@ -837,8 +839,8 @@ function battleAnimate(now) {
     bullet.y += bullet.vy * delta;
     bullet.life -= delta * 60; // old logic was in frames; scale for 60fps
     return (
-      bullet.x > 0 && bullet.x < battleWidth &&
-      bullet.y > 0 && bullet.y < battleHeight &&
+     /*  bullet.x > 0 && bullet.x < battleWidth &&
+      bullet.y > 0 && bullet.y < battleHeight && */
       bullet.life > 0
     );
   });
@@ -848,9 +850,9 @@ function battleAnimate(now) {
     battleCtx.globalAlpha = 1.0;
     battleCtx.beginPath();
     battleCtx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
-    battleCtx.fillStyle = '#6db6d8';
-    // battleCtx.shadowColor = '#6db6d8'; // comment out if you want to remove glow!
-    // battleCtx.shadowBlur = 12; // comment out for no glow
+    battleCtx.fillStyle = '#FFFFFF';
+    //battleCtx.shadowColor = '#6db6d8'; // comment out if you want to remove glow!
+    //battleCtx.shadowBlur = 12; // comment out for no glow
     battleCtx.fill();
     battleCtx.restore();
   });

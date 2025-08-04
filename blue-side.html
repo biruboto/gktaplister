@@ -561,13 +561,14 @@ function fireBullet() {
     const bulletY = cy + rotatedY;
 
     // Bullet speed (in direction of ship)
-    const bulletSpeed = 8;
+    const bulletSpeed = 1000;
 
     bullets.push({
       x: bulletX,
       y: bulletY,
-      vx: Math.cos(angleRad) * bulletSpeed,
-      vy: Math.sin(angleRad) * bulletSpeed,
+      vx: Math.cos(angleRad) * bulletSpeed + ship.vx,
+vy: Math.sin(angleRad) * bulletSpeed + ship.vy,
+
       radius: 1 * scale, // Small bullets
       life: 240
     });
@@ -646,8 +647,8 @@ ship.y = spawnY;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
     const baseSpeed = ship.mode === 'broken'
-  ? (0.8 + Math.random() * 0.3) * 60
-  : (2 + Math.random() * 2) * 60;
+  ? (0.8 + Math.random() * 0.8) * 60
+  : (2 + Math.random() * 6) * 60;
 
     ship.vx = (dx / dist) * baseSpeed;
     ship.vy = (dy / dist) * baseSpeed;
@@ -722,7 +723,7 @@ const timeLimit = ship.mode === 'broken'
     if (bulletTimer >= nextBulletInterval) {
       fireBullet();
       bulletTimer = 0;
-      nextBulletInterval = 10 + Math.floor(Math.random() * 100); // random between 12 and 28
+      nextBulletInterval = 5 + Math.floor(Math.random() * 50); // random between 12 and 28
     }
 
     const forwardOffset = 200;
@@ -742,7 +743,7 @@ const timeLimit = ship.mode === 'broken'
 
     // --- BOBBING LOGIC ---
     const bobAmplitude = 50;
-    const bobFrequency = 0.02;
+    const bobFrequency = 2.0;
     const bobOffset = Math.sin(ship.timer * bobFrequency) * bobAmplitude;
     const perpAngle = angleRad + Math.PI / 2;
     alienX += Math.cos(perpAngle) * bobOffset;
@@ -797,7 +798,7 @@ const timeLimit = ship.mode === 'broken'
     battleCtx.globalAlpha = 1.0;
     battleCtx.beginPath();
     battleCtx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
-    battleCtx.fillStyle = '#6db6d8';
+    battleCtx.fillStyle = '#FFFFFF';
     // battleCtx.shadowColor = '#6db6d8'; // comment out if you want to remove glow!
     // battleCtx.shadowBlur = 12; // comment out for no glow
     battleCtx.fill();
