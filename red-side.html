@@ -318,6 +318,8 @@ function animateStarfield(now) {
 
     let battleWidth = battleCanvas.width = window.innerWidth;
     let battleHeight = battleCanvas.height = window.innerHeight;
+    let lastBattleTime = performance.now();
+
 
     window.addEventListener('resize', () => {
       battleWidth = battleCanvas.width = window.innerWidth;
@@ -566,12 +568,12 @@ function drawParticles() {
   });
 }
 
-function updateParticles() {
+function updateParticles(delta) {
   particles.forEach(p => {
-    p.x += p.vx;
-    p.y += p.vy;
-    p.radius *= 0.9;       // Shrinks faster = tapered cone
-    p.alpha -= 0.1;       // Fades faster = shorter trail
+    p.x += p.vx * delta;
+    p.y += p.vy * delta;
+    p.radius *= Math.pow(0.9, delta * 60); // decay matches old logic at 60fps
+    p.alpha -= 0.1 * delta * 60; // fade speed matches old logic at 60fps
   });
   particles = particles.filter(p => p.alpha > 0);
 }
@@ -696,8 +698,8 @@ ship.y = spawnY;
     const dist = Math.sqrt(dx * dx + dy * dy);
 
     const baseSpeed = ship.mode === 'broken'
-      ? 0.8 + Math.random() * 0.3
-      : 2 + Math.random() * 2;
+  ? (0.8 + Math.random() * 0.3) * 60
+  : (2 + Math.random() * 2) * 60;
 
     ship.vx = (dx / dist) * baseSpeed;
     ship.vy = (dy / dist) * baseSpeed;
@@ -707,13 +709,16 @@ ship.y = spawnY;
   }
 }
 
-function battleAnimate() {
-  
+function battleAnimate(now) {
+  if (typeof now !== 'number') now = performance.now();
+  let delta = (now - lastBattleTime) / 1000; // seconds since last frame
+  lastBattleTime = now;
+
   battleCtx.clearRect(0, 0, battleWidth, battleHeight);
 
   if (!ship.active && Math.random() < 0.002) {
-  maybeActivateShip();
-}
+    maybeActivateShip();
+  }
 
   // --- EARLY SHIP INACTIVE CHECK ---
   if (!ship.active) {
@@ -724,7 +729,7 @@ function battleAnimate() {
     alienCtx.clearRect(0, 0, alienCanvas.width, alienCanvas.height);
 
     drawParticles();
-    updateParticles();
+    updateParticles(delta);
     requestAnimationFrame(battleAnimate);
     return;
   }
@@ -732,10 +737,10 @@ function battleAnimate() {
   // --- EARLY DEACTIVATION CHECK ---
   const buffer = 100;
   const timeLimit = ship.mode === 'broken'
-    ? 3000
+    ? 3.0  // was 3000 frames, now 3 seconds (tweak as needed)
     : ship.mode === 'combat'
-      ? 1500
-      : 1200;
+      ? 1.5 // was 1500 frames, now 1.5 seconds
+      : 1.2; // was 1200 frames, now 1.2 seconds
 
   if (
     ship.x < -buffer || ship.x > battleWidth + buffer ||
@@ -753,24 +758,23 @@ function battleAnimate() {
   // --- EARLY RETURN IF SHIP IS INACTIVE ---
   if (!ship.active) {
     drawParticles();
-    updateParticles();
+    updateParticles(delta);
     requestAnimationFrame(battleAnimate);
     return;
   }
 
   // --- SHIP AND ALIEN MOTION ---
-  ship.x += ship.vx;
-  ship.y += ship.vy;
-  ship.timer++;
+  ship.x += ship.vx * delta;
+  ship.y += ship.vy * delta;
+  ship.timer += delta;
 
   if (ship.mode === 'combat') {
-  bulletTimer++;
-if (bulletTimer >= nextBulletInterval) {
-  fireBullet();
-  bulletTimer = 0;
-  // Set next interval to a random value between 12 and 28 frames (tweak as desired)
-  nextBulletInterval = 10 + Math.floor(Math.random() * 100); // random between 12 and 28
-}
+    bulletTimer += delta * 60; // keeps previous logic compatible (frame rate scaling)
+    if (bulletTimer >= nextBulletInterval) {
+      fireBullet();
+      bulletTimer = 0;
+      nextBulletInterval = 10 + Math.floor(Math.random() * 100); // random between 12 and 28
+    }
 
     const forwardOffset = 200;
     const angleRad = ship.angle * Math.PI / 180;
@@ -813,7 +817,7 @@ if (bulletTimer >= nextBulletInterval) {
     }
 
     // 👾 Animate alien sprite frames
-    alien.frameTicker++;
+    alien.frameTicker += delta * 60; // scale frameTicker as well
     if (alien.frameTicker >= alienSprite.animationSpeed) {
       alien.frameTicker = 0;
       alien.frameIndex = (alien.frameIndex + 1) % alienSprite.frames.length;
@@ -829,33 +833,33 @@ if (bulletTimer >= nextBulletInterval) {
   }
 
   bullets = bullets.filter(bullet => {
-  bullet.x += bullet.vx;
-  bullet.y += bullet.vy;
-  bullet.life--;
-  return (
-    bullet.x > 0 && bullet.x < battleWidth &&
-    bullet.y > 0 && bullet.y < battleHeight &&
-    bullet.life > 0
-  );
-});
+    bullet.x += bullet.vx * delta;
+    bullet.y += bullet.vy * delta;
+    bullet.life -= delta * 60; // old logic was in frames; scale for 60fps
+    return (
+      bullet.x > 0 && bullet.x < battleWidth &&
+      bullet.y > 0 && bullet.y < battleHeight &&
+      bullet.life > 0
+    );
+  });
 
-bullets.forEach(bullet => {
-  battleCtx.save();
-  battleCtx.globalAlpha = 1.0; // fully visible for debug
-  battleCtx.beginPath();
-  battleCtx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2); // <--- This was missing!
-  battleCtx.fillStyle = '#6db6d8';
-  battleCtx.shadowColor = '#6db6d8';
-  battleCtx.shadowBlur = 12;
-  battleCtx.fill();
-  battleCtx.restore();
-});
+  bullets.forEach(bullet => {
+    battleCtx.save();
+    battleCtx.globalAlpha = 1.0;
+    battleCtx.beginPath();
+    battleCtx.arc(bullet.x, bullet.y, bullet.radius, 0, Math.PI * 2);
+    battleCtx.fillStyle = '#6db6d8';
+    // battleCtx.shadowColor = '#6db6d8'; // comment out if you want to remove glow!
+    // battleCtx.shadowBlur = 12; // comment out for no glow
+    battleCtx.fill();
+    battleCtx.restore();
+  });
 
   drawParticles();
-  updateParticles();
+  updateParticles(delta);
 
   if (ship.mode === 'broken') {
-    ship.angle += 0.5;
+    ship.angle += 0.5 * delta * 60; // matches original spin speed at 60fps
   }
 
   drawShip(ship.x, ship.y);
